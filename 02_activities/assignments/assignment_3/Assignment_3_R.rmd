@@ -1,0 +1,113 @@
+---
+title: "Assignment_3_R"
+author: "Robel Alemu"
+date: "2026-01-30"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+
+library(tidyverse)
+library(ggrepel)
+library(viridis)
+
+```
+
+## Import data
+
+Dataset is called the "Intimate Partner and Family Violence" dataset obtained from the City of Toronto's Open Data Catalogue.
+
+https://open.toronto.ca/dataset/intimate-partner-and-family-violence/ 
+
+```{r import data}
+
+# import csv file
+df <- read_csv("./Intimate Partner and Family Violence.csv")
+
+# return first five rows
+print(df, n = 5)
+
+```
+
+```{r plot data}
+
+# aggregate count by year and category
+df2 <- 
+  df %>% 
+  rename(year = REPORT_YEAR, category = FAMILY_VIOLENCE_FLAG, count = COUNT_) %>% 
+  group_by(year, category) %>% 
+  summarise(count = sum(count))
+
+# return first five rows
+print(df2, n = 5)
+
+```
+```{r}
+# create plot
+
+count_plot <-
+  df2 %>% 
+  ggplot(aes(x = year, y = count, colour = category, fill = category)) +
+  geom_line(size = 1.5) +
+  geom_text_repel(aes(label = count)) +
+  scale_colour_viridis_d(begin = 0, end = 0.8) +
+  scale_fill_viridis_d(begin = 0, end = 0.8) +
+  scale_x_continuous(breaks = seq(2014, 2024, 2)) +
+  labs(
+    title = "Intimate Partner Violence Occurences by Year",
+    subtitle = "Source: Intimate Partner and Family Violence dataset from the City of Toronto.",
+    fill = "Category",
+    colour = "Category",
+    x = "Year",
+    y = "Count"
+  ) +
+  theme_bw(base_family = "sans") # sets base font to sans
+
+print(count_plot)
+
+```
+
+
+```{r export figure, include=FALSE}
+
+# save figure 
+
+ggsave(filename = "Assignment_3_R.png", height = 5, width = 8)
+
+```
+
+# What software did you use to create your data visualization?
+
+The software used was R.
+
+# Who is your intended audience? 
+
+The intended audience is the general public.
+    
+# What information or message are you trying to convey with your visualization? 
+
+The visualization is meant to convey that intimate partner violence remains an important public safety concern often involving intimate partners.
+    
+# What aspects of design did you consider when making your visualization? How did you apply them? With what elements of your plots? 
+
+The visualizations incorporated a simple figure design featuring two axes and colour coded categories to reduce cognitive load.
+    
+# How did you ensure that your data visualizations are reproducible? If the tool you used to make your data visualization is not reproducible, how will this impact your data visualization? 
+
+The figure was generated programmatically. The code used to generate the figure is provided with comments explaining general steps.
+    
+# How did you ensure that your data visualization is accessible?
+
+The data visualization utilized a color blind friendly palette (i.e. viridis) with an associated legend to label categories. In addition, a sans-serif family typeface was used to make it more accessible for people with cognitive disabilities. Lastly, a subtitle was included to provide additional description for the reader.
+    
+# Who are the individuals and communities who might be impacted by your visualization?  
+
+This visualization is expected to impact members of the general public, but also the following stakeholder groups: victims of intimate partner violence, law enforcement organizations and policymakers.
+    
+# How did you choose which features of your chosen dataset to include or exclude from your visualization?
+
+The dataset was transformed to aggregate count information by year, collapsing smaller time units and locality information. This was done to make the trend more accessible to the public.
+    
+# What ‘underwater labour’ contributed to your final data visualization product?
+
+In this case, the preparation of the dataset can be considered the main underwater labour. Specifically, the dataset is comprised of verified Intimate Partner Violence occurrences investigated by the Toronto Police Service (TPS) reported since 2014. Therefore, the staff at the TPS can be said to have made significant contributions towards this data visualization product.
